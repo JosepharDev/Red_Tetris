@@ -1,0 +1,22 @@
+{
+  "name": "red-tetris",
+  "version": "1.0.0",
+  "description": "Red Tetris — server side",
+  "main": "src/server/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server/index.js",
+    "dev":   "nodemon src/server/index.js",
+    "test":  "vitest run --coverage"
+  },
+  "dependencies": {
+    "express":          "^5.2.1",
+    "socket.io":        "^4.8.3",
+    "socket.io-client": "^4.8.3"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.5",
+    "nodemon":             "^3.1.14",
+    "vitest":              "^4.1.5"
+  }
+}
