@@ -6,17 +6,30 @@
   "type": "module",
   "scripts": {
     "start": "node src/server/index.js",
-    "dev":   "nodemon src/server/index.js",
-    "test":  "vitest run --coverage"
+    "dev": "nodemon src/server/index.js",
+    "test": "vitest run --coverage",
+    "client:dev": "vite",
+    "client:build": "vite build",
+    "client:preview": "vite preview"
   },
   "dependencies": {
-    "express":          "^5.2.1",
-    "socket.io":        "^4.8.3",
+    "@reduxjs/toolkit": "^2.12.0",
+    "express": "^5.2.1",
+    "lucide-react": "^1.21.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-redux": "^9.3.0",
+    "react-router-dom": "^7.18.0",
+    "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.1",
+    "@vitejs/plugin-react": "^6.0.3",
     "@vitest/coverage-v8": "^4.1.5",
-    "nodemon":             "^3.1.14",
-    "vitest":              "^4.1.5"
+    "nodemon": "^3.1.14",
+    "tailwindcss": "^4.3.1",
+    "vite": "^8.1.0",
+    "vitest": "^4.1.5"
   }
 }

@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@theme {
+  /* Background layers */
+  --color-bg-deep:  #0a0a0f;
+  --color-bg-board: #111118;
+  --color-bg-panel: #13131f;
+  --color-grid:     #1a1a2e;
+
+  /* Brand / accent */
+  --color-accent:      #ef4444;
+  --color-neon-cyan:   #00f5ff;
+  --color-neon-purple: #a855f7;
+
+  /* Text */
+  --color-text-hi:  #e5e7eb;
+  --color-text-dim: #6b7280;
+
+  /* Piece palette — matches server Piece.js type indices 1-7 */
+  --color-piece-I:       #00f5ff;
+  --color-piece-J:       #2563eb;
+  --color-piece-L:       #f97316;
+  --color-piece-O:       #eab308;
+  --color-piece-S:       #22c55e;
+  --color-piece-T:       #a855f7;
+  --color-piece-Z:       #ef4444;
+  --color-piece-ghost:   rgba(255,255,255,0.08);
+  --color-piece-penalty: #374151;
+
+  /* Typography */
+  --font-display: "Press Start 2P", monospace;
+  --font-ui:      "IBM Plex Mono", monospace;
+}
+
+/* ─── Reset ──────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0a0a0f;
+  color: #e5e7eb;
+  font-family: "IBM Plex Mono", monospace;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* CRT scanline overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.04) 2px,
+    rgba(0, 0, 0, 0.04) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+input:focus { outline: none; }
+
+/* ─── Animations ─────────────────────────────────────── */
+@keyframes glow-pulse {
+  0%, 100% { text-shadow: 0 0 10px #ef4444, 0 0 22px #ef4444, 0 0 45px #ef4444; }
+  50%       { text-shadow: 0 0 4px #ef4444,  0 0 10px #ef4444; }
+}
+
+@keyframes neon-flicker {
+  0%, 94%, 96%, 98%, 100% { opacity: 1; }
+  95%, 97%                 { opacity: 0.82; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes board-shake {
+  0%, 100% { transform: translateX(0);  }
+  20%       { transform: translateX(-5px); }
+  40%       { transform: translateX(5px);  }
+  60%       { transform: translateX(-3px); }
+  80%       { transform: translateX(3px);  }
+}
+
+@keyframes line-clear-flash {
+  0%   { background-color: rgba(255,255,255,0.9); box-shadow: 0 0 20px #fff; }
+  100% { background-color: transparent; box-shadow: none; }
+}
+
+/* ─── Utility classes ─────────────────────────────────── */
+.title-glow {
+  animation:
+    glow-pulse 2.5s ease-in-out infinite,
+    neon-flicker 7s ease-in-out infinite;
+}
+
+.fade-in-up {
+  animation: fade-in-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.board-shake {
+  animation: board-shake 0.28s ease-in-out;
+}
+
+.line-flash {
+  animation: line-clear-flash 0.25s ease-out forwards;
+}
