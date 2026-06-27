@@ -41,6 +41,11 @@ io.on('connection', (socket) => {
   const game = games.get(room);
   const player = new Player(socket.id, playerName, room);
   game.addPlayer(player);
+  if (game.status === 'PLAYING') {
+    socket.emit('join_rejected', { reason: 'Game already in progress' });
+    socket.disconnect();
+    return;
+  }
   socket.join(room);
 
   // Send current leaderboard when player joins
