@@ -39,13 +39,15 @@ io.on('connection', (socket) => {
   }
 
   const game = games.get(room);
-  const player = new Player(socket.id, playerName, room);
-  game.addPlayer(player);
+
   if (game.status === 'PLAYING') {
     socket.emit('join_rejected', { reason: 'Game already in progress' });
     socket.disconnect();
     return;
   }
+
+  const player = new Player(socket.id, playerName, room);
+  game.addPlayer(player);
   socket.join(room);
 
   // Send current leaderboard when player joins
@@ -55,7 +57,7 @@ io.on('connection', (socket) => {
   io.to(room).emit('game_update', game.getState());
 
   socket.on('start_game', ({ mode } = {}) => {
-if (player.isHost && (game.status === 'WAITING' || game.status === 'FINISHED')) {
+    if (player.isHost && (game.status === 'WAITING' || game.status === 'FINISHED')) {
       const selectedMode = mode || 'normal';
       game.start(selectedMode);
 
