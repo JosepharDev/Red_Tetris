@@ -5,38 +5,23 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { existsSync } from 'fs';
 
-// In ES Modules __dirname doesn't exist — reconstruct it from import.meta.url
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
 const DIST_DIR = join(__dirname, '../../dist/client');
 
 const app = express();
 
-// ── Static file serving ────────────────────────────────────────────────
-// Only active when the client has been built (dist/client/ exists).
-// In development the client team runs their own dev server (e.g. Vite).
 if (existsSync(DIST_DIR)) {
   app.use(express.static(DIST_DIR));
-  // SPA catch-all: send index.html for any non-asset URL so client-side
-  // routing (React Router etc.) can handle the path.
-  // NOTE: Express v5 requires '{*path}' instead of '*'.
   app.get('{*path}', (req, res) => {
     res.sendFile(join(DIST_DIR, 'index.html'));
   });
-  console.log(`Serving client from ${DIST_DIR}`);
-} else {
-  console.log('No dist/client found — static file serving disabled (dev mode).');
 }
-// ───────────────────────────────────────────────────────────────────────
 
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
+  cors: { origin: '*', methods: ['GET', 'POST'] }
 });
 
 import Game from './Game.js';
@@ -56,7 +41,6 @@ io.on('connection', (socket) => {
   const game = games.get(room);
   const player = new Player(socket.id, playerName, room);
   game.addPlayer(player);
-
   socket.join(room);
 
   // Send current leaderboard when player joins
@@ -66,11 +50,10 @@ io.on('connection', (socket) => {
   io.to(room).emit('game_update', game.getState());
 
   socket.on('start_game', ({ mode } = {}) => {
-    if (player.isHost && game.status === 'WAITING') {
+if (player.isHost && (game.status === 'WAITING' || game.status === 'FINISHED')) {
       const selectedMode = mode || 'normal';
       game.start(selectedMode);
 
-      // Start gravity escalation if mode includes it
       if (selectedMode.includes('gravity')) {
         game.startSpeedEscalation((speed) => {
           io.to(room).emit('speed_update', speed);
@@ -101,12 +84,10 @@ io.on('connection', (socket) => {
 
   socket.on('rows_cleared', ({ count, softDropCells = 0, hardDropCells = 0 }) => {
     if (game.status === 'PLAYING') {
-      const points = Game.calcScore(count, softDropCells, hardDropCells);
-      player.score += points;
+      player.score += Game.calcScore(count, softDropCells, hardDropCells);
 
       if (count > 1) {
-        const penaltyCount = count - 1;
-        socket.to(room).emit('penalty_lines', penaltyCount);
+        socket.to(room).emit('penalty_lines', count - 1);
       }
 
       player.updateSpectrum(player.board);
@@ -126,14 +107,13 @@ io.on('connection', (socket) => {
 
     // Check if game is finished (solo: immediate, multi: when all but 1 are game over)
     const activePlayers = game.players.filter(p => !p.gameOver);
-    if ((game.players.length === 1) || (game.players.length > 1 && activePlayers.length <= 1)) {
+    if (game.players.length === 1 || activePlayers.length <= 1) {
       game.finish();
 
       // Save winner score too
       if (activePlayers.length === 1) {
         saveScore(activePlayers[0].name, activePlayers[0].score);
       }
-
       const finalLeaderboard = getLeaderboard();
       io.to(room).emit('game_finished', { leaderboard: finalLeaderboard });
       io.to(room).emit('leaderboard', finalLeaderboard);

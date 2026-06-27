@@ -1,6 +1,5 @@
 import Piece from './Piece.js';
 
-// Classic Nintendo scoring: points per lines cleared at level 1
 const LINE_POINTS = [0, 100, 300, 500, 800];
 
 class Game {
