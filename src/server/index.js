@@ -54,6 +54,13 @@ io.on('connection', (socket) => {
   }
 
   const game = games.get(room);
+
+  if (game.status !== 'WAITING') {
+    socket.emit('game_full');
+    socket.disconnect(true);
+    return;
+  }
+
   const player = new Player(socket.id, playerName, room);
   game.addPlayer(player);
 
@@ -140,6 +147,14 @@ io.on('connection', (socket) => {
     }
 
     io.to(room).emit('game_update', game.getState());
+  });
+
+  socket.on('restart_game', () => {
+    if (player.isHost && game.status === 'FINISHED') {
+      game.restart();
+      io.to(room).emit('game_restarted');
+      io.to(room).emit('game_update', game.getState());
+    }
   });
 
   socket.on('get_leaderboard', () => {
