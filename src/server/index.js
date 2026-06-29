@@ -50,10 +50,8 @@ io.on('connection', (socket) => {
   game.addPlayer(player);
   socket.join(room);
 
-  // Send current leaderboard when player joins
   socket.emit('leaderboard', getLeaderboard());
 
-  // Broadcast game state
   io.to(room).emit('game_update', game.getState());
 
   socket.on('start_game', ({ mode } = {}) => {
@@ -70,7 +68,6 @@ io.on('connection', (socket) => {
       io.to(room).emit('game_started');
       io.to(room).emit('game_update', game.getState());
 
-      // Send first pieces to all players
       io.to(room).emit('next_pieces', {
         pieces: [game.getPiece(0), game.getPiece(1), game.getPiece(2)]
       });
@@ -112,12 +109,10 @@ io.on('connection', (socket) => {
     player.gameOver = true;
     saveScore(player.name, player.score);
 
-    // Check if game is finished (solo: immediate, multi: when all but 1 are game over)
     const activePlayers = game.players.filter(p => !p.gameOver);
     if (game.players.length === 1 || activePlayers.length <= 1) {
       game.finish();
 
-      // Save winner score too
       if (activePlayers.length === 1) {
         saveScore(activePlayers[0].name, activePlayers[0].score);
       }
@@ -133,6 +128,15 @@ io.on('connection', (socket) => {
     socket.emit('leaderboard', getLeaderboard());
   });
 
+  socket.on("chat_message", (text) => {
+    if (typeof text != "string" || text.trim() == "") return;
+    io.to(room).emit('chat_message', {
+      name: playerName,
+      text: text.trim().slice(0,200),
+      time: Date.now()
+    })
+  })
+  
   socket.on('disconnect', () => {
     console.log(`Player ${playerName} disconnected from room ${room}`);
     game.removePlayer(socket.id);
@@ -146,6 +150,12 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3004;
 
-httpServer.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+
+/* v8 ignore next 4 */
+if (process.argv[1] === __filename) {
+  httpServer.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+  });
+}
+
+export { httpServer, io };

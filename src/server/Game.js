@@ -44,7 +44,6 @@ class Game {
     return this.pieces[index];
   }
 
-  /** Calculate score for lines cleared + drop bonus */
   static calcScore(linesCleared, softDropCells = 0, hardDropCells = 0) {
     return (LINE_POINTS[linesCleared] || 0) + softDropCells + hardDropCells * 2;
   }
@@ -64,7 +63,6 @@ class Game {
     this._clearSpeedTimer();
   }
 
-  /** Start the gravity escalation timer — call after start() if mode includes gravity */
   startSpeedEscalation(onSpeedUpdate) {
     this._clearSpeedTimer();
     this.speedTimer = setInterval(() => {
