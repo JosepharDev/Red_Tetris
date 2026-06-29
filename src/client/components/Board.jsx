@@ -10,11 +10,12 @@ export default function Board({ board = EMPTY_BOARD, shake = false }) {
         display: 'grid',
         gridTemplateColumns: 'repeat(10, 1fr)',
         gap: '1px',
-        backgroundColor: '#1a1a2e', // gap color = grid line color
+        backgroundColor: '#1a1a2e',
         border: '2px solid #1a1a2e',
         padding: '1px',
-        // Outer neon border glow
         boxShadow: '0 0 0 1px #ef444430, 0 0 24px #ef444415',
+        width: '100%',
+        boxSizing: 'border-box',
       }}
     >
       {board.flat().map((cell, i) => (

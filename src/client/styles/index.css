@@ -114,3 +114,56 @@ input:focus { outline: none; }
 .line-flash {
   animation: line-clear-flash 0.25s ease-out forwards;
 }
+
+/* ─── Responsive game layout ─────────────────────────────── */
+
+/*
+  Board is 10 cols × 20 rows → aspect ratio 1:2
+  board-inner width = min(available-width, available-height / 2)
+  Panels are fixed 6.5rem wide each, so available-width = 100vw - 2×6.5rem - gaps
+*/
+
+.board-inner {
+  /* Width: half of available height OR full available width, whichever is smaller */
+  width: min(
+    calc(100vw - 15rem - 2rem),
+    calc((100vh - 56px) / 2)
+  );
+  /* Height auto-derived via aspect-ratio so cells stay square */
+  aspect-ratio: 1 / 2;
+  flex-shrink: 0;
+}
+
+.side-panel {
+  width: 6.5rem;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Narrow screens: shrink panels, widen board */
+@media (max-width: 540px) {
+  .board-inner {
+    width: min(
+      calc(100vw - 9rem - 1rem),
+      calc((100vh - 56px) / 2)
+    );
+  }
+  .side-panel {
+    width: 4rem;
+  }
+}
+
+/* Very small screens: stack layout, hide right panel extras */
+@media (max-width: 360px) {
+  .board-inner {
+    width: min(
+      calc(100vw - 5rem - 0.5rem),
+      calc((100vh - 56px) / 2)
+    );
+  }
+  .side-panel {
+    width: 2.25rem;
+  }
+}
