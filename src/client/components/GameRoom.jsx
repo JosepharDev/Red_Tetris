@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Board from './Board'
 import MiniBoard from './MiniBoard'
 import Spectrum from './Spectrum'
+import Chat from './Chat'
 import { useTetris } from '../hooks/useTetris'
 import { useSocket } from '../hooks/useSocket'
 
@@ -22,6 +23,8 @@ export default function GameRoom() {
   const [leaderboard, setLeaderboard]   = useState([])
   const [phase, setPhase]               = useState('connecting')
   const [modeSelect, setModeSelect]     = useState('normal')
+  const [messages, setMessages]         = useState([])
+  const [rejectReason, setRejectReason] = useState('')
   const phaseRef = useRef('connecting')
   const serverStateRef = useRef(null)
 
@@ -66,7 +69,11 @@ export default function GameRoom() {
     },
     onSpeed: (s) => tetrisRef.current.setSpeed(s),
     onLeaderboard: (lb) => setLeaderboard(lb),
-    onFull: () => setGamePhase('full'),
+    onRejected: ({ reason }) => {
+      setRejectReason(reason || 'Unable to join')
+      setGamePhase('rejected')
+    },
+    onChat: (m) => setMessages(prev => [...prev, m]),
   })
 
   const emitRef = useRef(emit)
@@ -88,7 +95,7 @@ export default function GameRoom() {
       emitRef.current('request_pieces', state.queue.length)
     }
     tetris.spawn()
-  }, [state.needsSpawn])  // eslint-disable-line react-hooks/exhaustive-deps
+  }, [state.needsSpawn])
 
   // Report game over
   useEffect(() => {
@@ -101,6 +108,9 @@ export default function GameRoom() {
   useEffect(() => {
     if (state.status !== 'playing') return
     const handler = (e) => {
+      // Don't hijack keys while typing in chat / any text field
+      const tag = e.target?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return
       switch (e.code) {
         case 'ArrowLeft':
           e.preventDefault()
@@ -162,14 +172,14 @@ export default function GameRoom() {
     starting:   'STARTING',
     playing:    'PLAYING',
     finished:   'FINISHED',
-    full:       'FULL',
+    rejected:   'REJECTED',
   }[phase] ?? 'WAITING'
 
   const statusColor = {
     waiting: '#eab308',
     playing: '#22c55e',
     finished: '#a855f7',
-    full: '#ef4444',
+    rejected: '#ef4444',
   }[phase] ?? '#6b7280'
 
   return (
@@ -216,11 +226,14 @@ export default function GameRoom() {
           </p>
         )}
 
-        {/* ══ FULL ══ */}
-        {phase === 'full' && (
+        {/* ══ REJECTED ══ */}
+        {phase === 'rejected' && (
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontFamily: '"Press Start 2P", monospace', color: '#ef4444', fontSize: '0.8rem', marginBottom: '1rem' }}>
-              ROOM FULL
+            <p style={{ fontFamily: '"Press Start 2P", monospace', color: '#ef4444', fontSize: '0.8rem', marginBottom: '0.75rem', lineHeight: 1.8 }}>
+              JOIN<br />REJECTED
+            </p>
+            <p style={{ fontFamily: '"IBM Plex Mono", monospace', color: '#6b7280', fontSize: '0.7rem', marginBottom: '1rem' }}>
+              {rejectReason}
             </p>
             <button onClick={() => navigate('/')} style={btnStyle}>BACK</button>
           </div>
@@ -425,6 +438,16 @@ export default function GameRoom() {
           </div>
         )}
       </main>
+
+      {/* ── Chat (lobby + in-game) ── */}
+      {(phase === 'waiting' || phase === 'starting' || phase === 'playing'
+        || (phase !== 'finished' && state.status === 'over')) && (
+        <Chat
+          messages={messages}
+          me={playerName}
+          onSend={(text) => emit('chat_message', text)}
+        />
+      )}
     </div>
   )
 }
