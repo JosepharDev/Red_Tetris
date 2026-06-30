@@ -23,7 +23,9 @@ export default function Cell({ type = 0 }) {
       style={{
         aspectRatio: '1 / 1',
         backgroundColor: isEmpty ? '#111118' : color,
-        border: '1px solid #1a1a2e',
+        borderWidth: '1px',
+        borderStyle: 'solid',
+        borderColor: isGhost ? 'rgba(255,255,255,0.18)' : '#1a1a2e',
         // 3-D bevel via inset shadows on filled cells, outer neon glow
         boxShadow: isFilled
           ? [
@@ -32,8 +34,6 @@ export default function Cell({ type = 0 }) {
               `inset -2px -2px 0 rgba(0,0,0,0.38)`,
             ].join(', ')
           : 'none',
-        // Ghost: no bevel, just subtle border tint
-        ...(isGhost && { borderColor: 'rgba(255,255,255,0.18)' }),
       }}
     />
   )
