@@ -117,11 +117,6 @@ input:focus { outline: none; }
 
 /* ─── Responsive game layout ─────────────────────────────── */
 
-/*
-  Board is 10 cols × 20 rows → aspect ratio 1:2
-  board-inner width = min(available-width, available-height / 2)
-  Panels are fixed 6.5rem wide each, so available-width = 100vw - 2×6.5rem - gaps
-*/
 
 .board-inner {
   /* Width: half of available height OR full available width, whichever is smaller */
