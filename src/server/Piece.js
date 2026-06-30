@@ -1,4 +1,3 @@
-// The original Tetrimino shapes
 const SHAPES = [
   // I
   [
@@ -48,7 +47,6 @@ class Piece {
   constructor() {
     this.type = Math.floor(Math.random() * SHAPES.length);
     this.shape = SHAPES[this.type];
-    // Start pos could be passed or determined here
   }
 }
 
