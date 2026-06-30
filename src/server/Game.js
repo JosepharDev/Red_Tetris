@@ -78,6 +78,19 @@ class Game {
     }
   }
 
+  restart() {
+    this.status = 'WAITING';
+    this.pieces = [];
+    this.currentSpeed = 1000;
+    this._clearSpeedTimer();
+    this.players.forEach(p => {
+      p.board = Array(20).fill().map(() => Array(10).fill(0));
+      p.spectrum = Array(10).fill(20);
+      p.gameOver = false;
+      p.score = 0;
+    });
+  }
+
   finish() {
     this.status = 'FINISHED';
     this._clearSpeedTimer();
