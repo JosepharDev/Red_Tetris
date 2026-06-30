@@ -18,7 +18,8 @@ export function useSocket(room, playerName, handlers) {
     socket.on('game_restarted', () => hRef.current.onRestarted?.())
     socket.on('speed_update',   s  => hRef.current.onSpeed?.(s))
     socket.on('leaderboard',    lb => hRef.current.onLeaderboard?.(lb))
-    socket.on('game_full',      () => hRef.current.onFull?.())
+    socket.on('join_rejected',  d  => hRef.current.onRejected?.(d))
+    socket.on('chat_message',   m  => hRef.current.onChat?.(m))
 
     return () => socket.disconnect()
   }, [room, playerName])
