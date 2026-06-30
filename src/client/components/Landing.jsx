@@ -165,6 +165,7 @@ export default function Landing() {
 }
 
 function InputField({ label, value, onChange, placeholder, autoFocus }) {
+  const [focused, setFocused] = useState(false)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
       <label
@@ -186,22 +187,17 @@ function InputField({ label, value, onChange, placeholder, autoFocus }) {
         maxLength={20}
         autoComplete="off"
         spellCheck={false}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         style={{
           fontFamily: '"IBM Plex Mono", monospace',
           fontSize: '0.9rem',
           color: '#e5e7eb',
           backgroundColor: '#13131f',
-          border: '1px solid #1a1a2e',
+          border: `1px solid ${focused ? '#ef4444' : '#1a1a2e'}`,
+          boxShadow: focused ? '0 0 12px rgba(239,68,68,0.25)' : 'none',
           padding: '0.625rem 0.75rem',
           transition: 'border-color 0.15s, box-shadow 0.15s',
-        }}
-        onFocus={e => {
-          e.currentTarget.style.borderColor = '#ef4444'
-          e.currentTarget.style.boxShadow  = '0 0 12px rgba(239,68,68,0.25)'
-        }}
-        onBlur={e => {
-          e.currentTarget.style.borderColor = '#1a1a2e'
-          e.currentTarget.style.boxShadow   = 'none'
         }}
       />
     </div>
@@ -209,30 +205,24 @@ function InputField({ label, value, onChange, placeholder, autoFocus }) {
 }
 
 function JoinButton() {
+  const [hover, setHover] = useState(false)
   return (
     <button
       type="submit"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       style={{
         marginTop: '0.5rem',
         padding: '0.85rem 1rem',
         fontFamily: '"Press Start 2P", monospace',
         fontSize: '0.65rem',
         letterSpacing: '0.22em',
-        color: '#0a0a0f',
-        backgroundColor: '#ef4444',
+        color: hover ? '#ef4444' : '#0a0a0f',
+        backgroundColor: hover ? 'transparent' : '#ef4444',
         border: '2px solid #ef4444',
+        boxShadow: hover ? '0 0 24px rgba(239,68,68,0.35)' : 'none',
         cursor: 'pointer',
         transition: 'background-color 0.15s, color 0.15s, box-shadow 0.15s',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.backgroundColor = 'transparent'
-        e.currentTarget.style.color           = '#ef4444'
-        e.currentTarget.style.boxShadow       = '0 0 24px rgba(239,68,68,0.35)'
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.backgroundColor = '#ef4444'
-        e.currentTarget.style.color           = '#0a0a0f'
-        e.currentTarget.style.boxShadow       = 'none'
       }}
     >
       JOIN GAME
