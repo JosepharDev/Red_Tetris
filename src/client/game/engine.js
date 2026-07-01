@@ -1,5 +1,4 @@
-// Pure Tetris domain logic — no React, no side effects, no `this`.
-// Every function takes state in and returns new values out.
+
 
 export const COLS = 10
 export const ROWS = 20
