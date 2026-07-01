@@ -151,6 +151,18 @@ io.on('connection', (socket) => {
     if (game.players.length === 0) {
       games.delete(room);
     } else {
+      if (game.status === 'PLAYING') {
+        const activePlayers = game.players.filter(p => !p.gameOver);
+        if (activePlayers.length <= 1) {
+          game.finish();
+          if (activePlayers.length === 1) {
+            saveScore(activePlayers[0].name, activePlayers[0].score);
+          }
+          const finalLeaderboard = getLeaderboard();
+          io.to(room).emit('game_finished', { leaderboard: finalLeaderboard });
+          io.to(room).emit('leaderboard', finalLeaderboard);
+        }
+      }
       io.to(room).emit('game_update', game.getState());
     }
   });

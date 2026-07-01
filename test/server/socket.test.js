@@ -177,6 +177,22 @@ describe('Socket server', () => {
     bob.disconnect();
   });
 
+  it('ends the game when one of two players disconnects mid-game', async () => {
+    const alice = await connect(port, 'r16', 'Alice');
+    const bob   = await connect(port, 'r16', 'Bob');
+
+    alice.emit('start_game', { mode: 'normal' });
+    await waitFor(alice, 'game_started');
+
+    const finished = waitFor(alice, 'game_finished');
+    bob.disconnect();
+
+    const result = await finished;
+    expect(result).toHaveProperty('leaderboard');
+
+    alice.disconnect();
+  });
+
   it('returns leaderboard on request', async () => {
     const alice = await connect(port, 'r12', 'Alice');
     alice.emit('get_leaderboard');
