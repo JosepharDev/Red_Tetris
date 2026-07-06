@@ -183,7 +183,11 @@ function reducer(state, action) {
     case 'PENALTY': {
       if (state.status !== 'playing') return state
       const count = Math.min(action.count, ROWS - 1)
-      const penaltyRows = Array(count).fill(null).map(() => Array(COLS).fill(8))
+      const penaltyRows = Array(count).fill(null).map(() => {
+        const row = Array(COLS).fill(8)
+        row[Math.floor(Math.random() * COLS)] = 0
+        return row
+      })
       const newBoard = [...state.board.slice(count), ...penaltyRows]
       let current = state.current
       if (current) {
